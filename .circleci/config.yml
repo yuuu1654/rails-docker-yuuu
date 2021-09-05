@@ -1,14 +1,14 @@
-version: 2.1
+version: 2.1  #設定ファイルの書き方のバージョン
 orbs:
   ruby: circleci/ruby@1.1.2
 
-jobs:
-  build: 
-    docker:
+jobs:   #実行させたいjobを定義する場所
+  build:   #名前を自由に定義できる
+    docker:   #jobを実行するマシンを定義
       - image: circleci/ruby:2.7
     working_directory: ~/rails-docker-yuuu/src #githubのリポジトリ名と同じにしておく
-    steps: 
-      - checkout:
+    steps:   #マシンに対してどういう命令を実行したいかを書く場所
+      - checkout:   #コードをリポジトリからチェックアウト
           path: ~/rails-docker-yuuu
       - ruby/install-deps
 
@@ -37,11 +37,11 @@ jobs:
           name: test
           command: bundle exec rake test
 
-workflows:
+workflows:   #定義したjobの実行タイミングを書く場所
   version: 2
-  build_and_test:
+  build_and_test:   #自由に名前を定義できる
     jobs:
-      - build
+      - build   #上のjobsで定義したbuild
       - test:
           requires:
             - build
