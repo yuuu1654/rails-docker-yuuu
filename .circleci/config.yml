@@ -1,6 +1,7 @@
 version: 2.1  #設定ファイルの書き方のバージョン
 orbs:
   ruby: circleci/ruby@1.1.2
+  heroku: circleci/heroku@1.2.3
 
 jobs:   #実行させたいjobを定義する場所
   build:   #名前を自由に定義できる
@@ -37,14 +38,43 @@ jobs:   #実行させたいjobを定義する場所
           name: test
           command: bundle exec rake test
 
+  deploy:
+    docker:
+      - image: circleci/ruby:2.7
+    steps:
+      - checkout
+      - setup_remote_docker:  #dockerコマンドを使えるようにする
+          version: 19.03.13
+      - heroku/install  #herokuコマンドのインストール
+      - run:
+          name: heroku login
+          command: heroku container:login      
+      - run:
+          name: push docker image
+          command: heroku container:push web -a $HEROKU_APP_NAME
+      - run:
+          name: release docker image
+          command: heroku container:release web -a $HEROKU_APP_NAME
+      - run:
+          name: database setup
+          command: heroku run bundle exec rake db:migrate
+          RAILS_ENV=production -a $HEROKU_APP_NAME
+
 workflows:   #定義したjobの実行タイミングを書く場所
   version: 2
-  build_and_test:   #自由に名前を定義できる
+  build_test_and_deploy:   #自由に名前を定義できる
     jobs:
       - build   #上のjobsで定義したbuild
       - test:
           requires:
             - build
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only:main  #mainにマージされた時だけデプロイを実行する
+
 
 
 
