@@ -73,7 +73,7 @@ workflows:   #定義したjobの実行タイミングを書く場所
             - test
           filters:
             branches:
-              only:main  #mainにマージされた時だけデプロイを実行する
+              only: main  #mainにマージされた時だけデプロイを実行する
 
 
 
