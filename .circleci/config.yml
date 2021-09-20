@@ -57,8 +57,7 @@ jobs:   #実行させたいjobを定義する場所
           command: heroku container:release web -a $HEROKU_APP_NAME
       - run:
           name: database setup
-          command: heroku run bundle exec rake db:migrate
-          RAILS_ENV=production -a $HEROKU_APP_NAME
+          command: heroku run bundle exec rake db:migrate RAILS_ENV=production -a $HEROKU_APP_NAME
 
 workflows:   #定義したjobの実行タイミングを書く場所
   version: 2
